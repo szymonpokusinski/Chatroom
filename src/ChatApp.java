@@ -3,8 +3,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 public class ChatApp {
     public static void main(String[] args) throws IOException, FontFormatException {
@@ -30,7 +28,7 @@ public class ChatApp {
                             System.out.println("Nawiązałem połączenie z serwerem" + String.valueOf(klient.socket));
                             GUI83 gui83 = new GUI83(klient);
                             Thread sendingMessage = new Thread(new KlientDoSerwera(klient.socket));
-                            Thread receivingMessage = new Thread(new KlientOdSerwera(gui83.chatPanel, gui83.roomPanel, gui83));
+                            Thread receivingMessage = new Thread(new KlientOdSerwera(gui83.chatPanel, gui83.roomsMenu, gui83));
                             sendingMessage.start();
                             receivingMessage.start();
                         } catch (IOException | FontFormatException ex) {

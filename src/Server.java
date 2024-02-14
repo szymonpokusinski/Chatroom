@@ -8,13 +8,9 @@ import java.util.ArrayList;
 
 public class Server {
     public static ArrayList<Klient> klients = new ArrayList<>();
-    public static ArrayList<Room> rooms = new ArrayList<>();
-    public static RoomManager roomManager = new RoomManager();
-
     public Server() {
 
     }
-
     public static void main(String[] args) throws IOException {
         ServerSocket server = new ServerSocket(50007);
 

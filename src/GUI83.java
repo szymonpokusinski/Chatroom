@@ -4,12 +4,14 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 public class GUI83 extends JFrame implements ActionListener {
-    RoomPanel roomPanel;
+    RoomsMenu roomsMenu;
     ChatArea2 chatPanel;
     JTextField textField;
     Klient klient;
+    public static ArrayList<RoomPanel> roomPanels = new ArrayList<>();
 
     GUI83(Klient klient) throws FontFormatException, IOException {
 
@@ -20,9 +22,9 @@ public class GUI83 extends JFrame implements ActionListener {
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        roomPanel = new RoomPanel(this.klient);
-        roomPanel.makeRoom.addActionListener(this);
-        roomPanel.dostepnePokoje.addMouseListener(new MouseListener() {
+        roomsMenu = new RoomsMenu(this.klient);
+        roomsMenu.makeRoom.addActionListener(this);
+        roomsMenu.dostepnePokoje.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 System.out.println("Dostepne pokoje: ");
@@ -62,7 +64,7 @@ public class GUI83 extends JFrame implements ActionListener {
         addRoomPanel("Chat1");
         addRoomPanel("Chat2");
 
-        roomPanel.makeRoom.addActionListener(new ActionListener() {
+        roomsMenu.makeRoom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String roomName;
@@ -89,7 +91,7 @@ public class GUI83 extends JFrame implements ActionListener {
             }
         });
 
-        add(roomPanel);
+        add(roomsMenu);
 
         chatPanel = new ChatArea2("chat1", this.klient);
         add(chatPanel);
@@ -99,11 +101,8 @@ public class GUI83 extends JFrame implements ActionListener {
 
     public void addRoomPanel(String name){
         Border border = BorderFactory.createLineBorder(Color.BLACK);
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.lightGray);
-        JLabel jLabel = new JLabel(name);
-        panel.add(jLabel);
-        panel.setBorder(border);
+        RoomPanel panel = new RoomPanel(name);
+        roomPanels.add(panel);
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -111,13 +110,13 @@ public class GUI83 extends JFrame implements ActionListener {
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                panel.setBackground(Color.LIGHT_GRAY);
+                panel.setBackground(Color.GRAY.darker());
             }
             @Override
             public void mouseClicked(MouseEvent e) {
-                String chat = jLabel.getText();
+                String chat = panel.name.getText();
                 System.out.println(chat);
-                chatPanel.changeRoom(jLabel.getText());
+                chatPanel.changeRoom(panel.name.getText());
                 String message = "!!CHANGEROOM!!" + chat;
                 try {
 
@@ -131,17 +130,17 @@ public class GUI83 extends JFrame implements ActionListener {
 
             }
         });
-        roomPanel.main.add(panel);
-        roomPanel.revalidate();
-        roomPanel.repaint();
+        roomsMenu.main.add(panel);
+        roomsMenu.revalidate();
+        roomsMenu.repaint();
 
     }
     @Override
     public void actionPerformed(ActionEvent e) {
     }
     public void czyszczenie(){
-        roomPanel.main.revalidate();
-        roomPanel.main.repaint();
+        roomsMenu.main.revalidate();
+        roomsMenu.main.repaint();
     }
 }
 

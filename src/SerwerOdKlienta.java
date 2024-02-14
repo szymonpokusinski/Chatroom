@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class SerwerOdKlienta implements Runnable {
     Socket socket;
@@ -21,7 +22,6 @@ public class SerwerOdKlienta implements Runnable {
     public void run() {
         while(true) {
             try {
-
                 String message = this.in.readLine();
                 String getclientList = "!!CLIENTSLIST!!";
                 String changeRoom = "!!CHANGEROOM!!";
@@ -37,26 +37,22 @@ public class SerwerOdKlienta implements Runnable {
                     String roomName = parts[1];
                     for (Klient klient: Server.getKlients()){
                         if(klient.socket == socket){
-                            System.out.println("Atkualny pokoj klienta " +klient.nickname+ " : " +klient.room + " Nazwa pokoju: " + klient.room.name);
                             Room oldRoom = klient.room;
-                            System.out.println("Lista klientów w " + oldRoom.name + " " + oldRoom.klients);
                             oldRoom.removeKlient(klient);
-                            System.out.println("Lista kleintow po usunięciu  w " + oldRoom.name + " " + oldRoom.klients);
                             for (Room room: RoomManager.rooms){
                                 if(roomName.equals(room.getName())){
                                     klient.setRoom(room);
-                                    System.out.println("Klient: "+klient.nickname +" przeniesiony do pokoju: " + klient.room + " Nazwa: " + klient.room.getName());
                                     room.addKlient(klient);
-                                    System.out.println("Lista klientów w pokoju " + room.name + ": " + room.klients);
+
+                                    roomsAndNumberOfClients();
+
                                     PrintWriter out = new PrintWriter(socket.getOutputStream());
 
                                     String mesout = "";
                                     for (Wiadomosc w : klient.room.wiadomoscs){
-                                        //System.out.println(w.nick+":"+w.tresc);
                                         mesout += w.nick+"&&"+w.tresc+"#";
-                                        System.out.println(mesout);
                                     }
-                                    out.println("!!MESSAGE!!"+mesout);
+                                    out.println("!!MESSAGE!!" + mesout);
                                     out.flush();
                                     break;
                                 }
@@ -88,7 +84,6 @@ public class SerwerOdKlienta implements Runnable {
                     System.out.println("Wiadomość: " + message1);
                     sendMessage(message1, socket);
 
-
                 } else {
                     Klient sender;
                     System.out.println(message);
@@ -114,7 +109,17 @@ public class SerwerOdKlienta implements Runnable {
 
                     }
                 } catch (IOException e) {
-                throw new RuntimeException(e);
+                    System.out.println("Ngałe zerwanie połączenia");
+                    throw new RuntimeException(e);
+            } finally {
+                try {
+                    System.out.println("zamkniecie połączenia");
+                    in.close();
+                    socket.close();
+                    //break;
+                } catch (IOException e) {
+                    //throw new RuntimeException(e);
+                }
             }
 
         }
@@ -157,6 +162,14 @@ public class SerwerOdKlienta implements Runnable {
         for (Klient klient : Server.getKlients()){
             sendMessage(message, klient.socket);
         }
+    }
+    private void roomsAndNumberOfClients() throws IOException {
+        StringBuilder message = new StringBuilder(" ");
+        for (Room room : RoomManager.rooms){
+            message.append(room.name).append("&&").append(room.klients.size()).append("#");
+        }
+        System.out.println(message);
+        sendingMessagesToEveryone("!!NROFCLIENTINROOM!!"+message);
     }
 }
 
