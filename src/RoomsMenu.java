@@ -1,11 +1,13 @@
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 
 public class RoomsMenu extends JPanel {
     RoundButton makeRoom;
@@ -13,7 +15,8 @@ public class RoomsMenu extends JPanel {
     JPanel main;
     JScrollPane scrollPane;
     Klient klient;
-    RoomsMenu(Klient klient) throws IOException {
+
+    RoomsMenu(Klient klient) {
         this.klient = klient;
 
         setBackground(Color.BLACK);
@@ -49,59 +52,6 @@ public class RoomsMenu extends JPanel {
         makeRoom.setBounds(10, 420, 180, 30);
         add(makeRoom);
     }
-    public void addRoomPanel(String name) throws IOException {
-        RoomPanel panel = (RoomPanel) createStyledRoomPanel(name);
-        main.add(panel);
-        revalidate();
-        repaint();
-    }
-    private JPanel createStyledRoomPanel(String name) {
-        RoomPanel panel = new RoomPanel(name);
-        panel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                panel.setBackground(panel.getBackground().darker());
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                panel.setBackground(Color.GRAY);
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                String chat = panel.name.getText();
-                System.out.println(chat);
-                String message = "!!CHANGEROOM!!" + chat;
-                try {
-                    PrintWriter out = new PrintWriter(klient.socket.getOutputStream());
-                    out.println(message);
-                    out.flush();
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
-        return panel;
-    }
-
-    public void showDialogForRoom() {
-        MakeRoomFrame frame = new MakeRoomFrame();
-        frame.jButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!frame.jTextField.getText().isEmpty()) {
-                    frame.dispose();
-                }
-            }
-        });
-    }
-
-    public void changeRoom(JLabel jLabel) {
-        String chat = jLabel.getText();
-        String message = "!!CHANGEROOM!!" + chat;
-        System.out.println(message);
-    }
 
     public void czyszczenie() {
         main.removeAll();
@@ -109,27 +59,6 @@ public class RoomsMenu extends JPanel {
         main.repaint();
     }
 
-    class RoundButton extends JButton {
-        public RoundButton(String label) {
-            super(label);
-            setContentAreaFilled(false);
-        }
-
-        protected void paintComponent(Graphics g) {
-            if (getModel().isArmed()) {
-                g.setColor(getBackground().darker());
-            } else {
-                g.setColor(getBackground());
-            }
-            g.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
-            super.paintComponent(g);
-        }
-
-        protected void paintBorder(Graphics g) {
-            g.setColor(Color.BLACK); // Czarne obramowanie
-            g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
-        }
-    }
     private void customizeScrollBar(JScrollPane scrollPane) {
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
         verticalScrollBar.setUI(new BasicScrollBarUI() {
@@ -166,5 +95,27 @@ public class RoomsMenu extends JPanel {
                 return button;
             }
         });
+    }
+
+    class RoundButton extends JButton {
+        public RoundButton(String label) {
+            super(label);
+            setContentAreaFilled(false);
+        }
+
+        protected void paintComponent(Graphics g) {
+            if (getModel().isArmed()) {
+                g.setColor(getBackground().darker());
+            } else {
+                g.setColor(getBackground());
+            }
+            g.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
+            super.paintComponent(g);
+        }
+
+        protected void paintBorder(Graphics g) {
+            g.setColor(Color.BLACK);
+            g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
+        }
     }
 }

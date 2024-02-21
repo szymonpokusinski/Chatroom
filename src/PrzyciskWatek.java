@@ -1,15 +1,14 @@
-public class PrzyciskWatek implements Runnable{
-    PrzyciskWatek(){
-        }
+public class PrzyciskWatek implements Runnable {
+
+    public static void main(String[] args) {
+        Thread thread = new Thread(new PrzyciskWatek());
+        thread.start();
+    }
 
     @Override
     public void run() {
-        while (true){
-            System.out.println(RoomManager .getRooms());
+        while (true) {
+            System.out.println(RoomManager.getRooms());
         }
-    }
-    public static void main(String[] args){
-        Thread thread = new Thread(new PrzyciskWatek());
-        thread.start();
     }
 }

@@ -21,7 +21,7 @@ public class KlientDoSerwera implements Runnable {
     }
 
     public void run() {
-        while(true) {
+        while (true) {
             String message;
             try {
                 message = this.klaw.readLine();

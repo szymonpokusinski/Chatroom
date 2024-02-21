@@ -8,9 +8,11 @@ import java.util.ArrayList;
 
 public class Server {
     public static ArrayList<Klient> klients = new ArrayList<>();
+
     public Server() {
 
     }
+
     public static void main(String[] args) throws IOException {
         ServerSocket server = new ServerSocket(50007);
 
@@ -45,17 +47,5 @@ public class Server {
     public synchronized static ArrayList<Klient> getKlients() {
         return new ArrayList<>(klients);
     }
-    public static void joinToServer(String nick, Socket socket) throws IOException {
-        for (Klient klient : klients) {
-            if (klient.socket != socket) {
-                PrintWriter out = new PrintWriter(klient.socket.getOutputStream());
-                out.println("JOIN: " + nick);
-                out.flush();
-            }
-        }
-    }
-    public synchronized static String getRooms() {
-        System.out.println(RoomManager.rooms);
-        return RoomManager.rooms.toString();
-    }
+
 }

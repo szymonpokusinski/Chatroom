@@ -36,16 +36,6 @@ public class Klient {
         this.room = room;
     }
 
-    public Room getRoom() {
-        return room;
-    }
-
-    public void sendMessage(String message) throws IOException {
-        PrintWriter out = new PrintWriter(socket.getOutputStream());
-        out.println(message);
-        out.flush();
-    }
-
     public void addDostepnePokoje(ArrayList<Room> list) {
         rooms = new ArrayList<>(list);
     }

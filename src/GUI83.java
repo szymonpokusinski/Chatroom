@@ -7,13 +7,12 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class GUI83 extends JFrame implements ActionListener {
+    public static ArrayList<RoomPanel> roomPanels = new ArrayList<>();
     RoomsMenu roomsMenu;
     ChatArea2 chatPanel;
-    JTextField textField;
     Klient klient;
     Thread sendingMessage;
     Thread receivingMessage;
-    public static ArrayList<RoomPanel> roomPanels = new ArrayList<>();
 
     GUI83(Klient klient) throws FontFormatException, IOException {
 
@@ -72,10 +71,10 @@ public class GUI83 extends JFrame implements ActionListener {
                 makeRoomFrame.jButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        if (!makeRoomFrame.jTextField.getText().isEmpty()){
+                        if (!makeRoomFrame.jTextField.getText().isEmpty()) {
                             System.out.println(makeRoomFrame.jTextField.getText());
                             addRoomPanel(makeRoomFrame.jTextField.getText());
-                            String message = "!!NEWROOM!!"+makeRoomFrame.jTextField.getText();
+                            String message = "!!NEWROOM!!" + makeRoomFrame.jTextField.getText();
                             try {
                                 sendMessage(message);
                             } catch (IOException ex) {
@@ -109,13 +108,10 @@ public class GUI83 extends JFrame implements ActionListener {
         });
         this.sendingMessage = new Thread(new KlientOdSerwera(this.chatPanel, this.roomsMenu, this));
         this.receivingMessage = new Thread(new KlientDoSerwera(this.klient.socket));
-        //Thread receivingMessagesFromClient = new Thread(new SerwerOdKlienta(this.klient.socket));
-        //receivingMessagesFromClient.start();
         communicationStart();
     }
 
-    public void addRoomPanel(String name){
-        Border border = BorderFactory.createLineBorder(Color.BLACK);
+    public void addRoomPanel(String name) {
         RoomPanel panel = new RoomPanel(name);
         roomPanels.add(panel);
         panel.addMouseListener(new MouseAdapter() {
@@ -123,10 +119,12 @@ public class GUI83 extends JFrame implements ActionListener {
             public void mouseEntered(MouseEvent e) {
                 panel.setBackground(panel.getBackground().darker());
             }
+
             @Override
             public void mouseExited(MouseEvent e) {
                 panel.setBackground(Color.GRAY.darker());
             }
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 String chat = panel.name.getText();
@@ -145,27 +143,16 @@ public class GUI83 extends JFrame implements ActionListener {
         roomsMenu.repaint();
 
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
     }
-    public void czyszczenie(){
-        roomsMenu.main.revalidate();
-        roomsMenu.main.repaint();
-    }
-    private void communicationStart() throws IOException {
+
+    private void communicationStart() {
         this.sendingMessage.start();
         this.receivingMessage.start();
     }
-    private void communicationClose(){
-        this.sendingMessage.interrupt();
-        this.receivingMessage.interrupt();
-        try {
-            sendingMessage.join();
-            receivingMessage.join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
     private void sendMessage(String message) throws IOException {
         PrintWriter out = new PrintWriter(klient.socket.getOutputStream());
         out.println(message);

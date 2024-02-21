@@ -11,18 +11,12 @@ import java.io.PrintWriter;
 
 public class ChatArea2 extends JPanel implements ActionListener {
     JTextField textField;
-    JList<String> messageList;
-    DefaultListModel<String> listModel;
     JButton sendButton;
     JLabel jLabel;
-    String nazwa;
     JScrollPane scrollPane;
     JPanel panelMessage;
     JPanel upJpanel;
-
-    private PrintWriter out;
     Klient klient;
-    Server server;
 
     ChatArea2(String nazwa, Klient klient) throws IOException {
         this.klient = klient;
@@ -34,11 +28,11 @@ public class ChatArea2 extends JPanel implements ActionListener {
         upJpanel = new JPanel();
         upJpanel.setBackground(Color.BLACK);
         upJpanel.setLayout(null);
-        upJpanel.setBounds(10,10,360,40);
+        upJpanel.setBounds(10, 10, 360, 40);
 
         JPanel chatname = new JPanel();
         chatname.setBackground(Color.BLACK);
-        chatname.setBounds(0,0,180,40);
+        chatname.setBounds(0, 0, 180, 40);
 
 
         jLabel = new JLabel(nazwa);
@@ -53,7 +47,7 @@ public class ChatArea2 extends JPanel implements ActionListener {
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(null);
         infoPanel.setBackground(Color.BLUE);
-        infoPanel.setBounds(330,10,20,20);
+        infoPanel.setBounds(330, 10, 20, 20);
         infoPanel.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -124,7 +118,7 @@ public class ChatArea2 extends JPanel implements ActionListener {
     }
 
     public void displayMessage(String message) {
-        ChatBubble chatBubble = new ChatBubble("Me",message, true);
+        ChatBubble chatBubble = new ChatBubble("Me", message, true);
         panelMessage.add(chatBubble);
         panelMessage.add(Box.createVerticalStrut(5));
         panelMessage.revalidate();
@@ -197,6 +191,7 @@ public class ChatArea2 extends JPanel implements ActionListener {
         });
     }
 }
+
 class RoundTextField83 extends JTextField {
     public RoundTextField83(int columns) {
         super(columns);

@@ -44,25 +44,25 @@ public class KlientOdSerwera implements Runnable {
                         String rooms = parts[1];
                         String[] parts2 = rooms.split("!");
                         roomsMenu.czyszczenie();
-                        for (String s: parts2){
+                        for (String s : parts2) {
                             gui83.addRoomPanel(s);
                         }
                     } else if (message.startsWith("!!MESSAGE!!")) {
-                        String[] parts = message.split("!!MESSAGE!!",2);
+                        String[] parts = message.split("!!MESSAGE!!", 2);
                         String mes = parts[1];
-                        String [] parts2 = mes.split("#");
-                        if (mes.isEmpty()){
+                        String[] parts2 = mes.split("#");
+                        if (mes.isEmpty()) {
 
-                        }  else {
+                        } else {
                             chatArea.panelMessage.removeAll();
                             for (String s : parts2) {
                                 String[] parts3 = s.split("&&");
                                 if (parts3[0].equals(gui83.klient.nickname)) {
                                     chatArea.panelMessage.add(new ChatBubble("Me", parts3[1], true));
-                                    chatArea.panelMessage.add(Box.createRigidArea(new Dimension(0,10)));
+                                    chatArea.panelMessage.add(Box.createRigidArea(new Dimension(0, 10)));
                                 } else {
                                     chatArea.panelMessage.add(new ChatBubble(parts3[0], parts3[1], false));
-                                    chatArea.panelMessage.add(Box.createRigidArea(new Dimension(0,10)));
+                                    chatArea.panelMessage.add(Box.createRigidArea(new Dimension(0, 10)));
                                 }
                             }
                             chatArea.panelMessage.revalidate();
@@ -98,24 +98,26 @@ public class KlientOdSerwera implements Runnable {
         panel.add(label);
         chatArea.displayMessage(message);
     }
-    private void readingTheCleintList(String message){
-        String [] parts = message.split("!!CLIENTLIST!!", 2);
+
+    private void readingTheCleintList(String message) {
+        String[] parts = message.split("!!CLIENTLIST!!", 2);
         System.out.println(parts[1]);
-        String [] clientNicks = parts[1].split("&&");
+        String[] clientNicks = parts[1].split("&&");
         System.out.println(Arrays.toString(clientNicks));
     }
+
     public void numberOfRooms(String message) {
 
         String[] parts = message.split("!!NROFCLIENTINROOM!! ", 2);
         String[] p2 = parts[1].split("#");
         int i = 0;
-        for (RoomPanel roomPanel : GUI83.roomPanels){
-            for (String s : p2){
-                if (roomPanel.name.getText().equals(s.split("&&")[0])){
-                    if (s.split("&&")[1].equals("0")){
+        for (RoomPanel roomPanel : GUI83.roomPanels) {
+            for (String s : p2) {
+                if (roomPanel.name.getText().equals(s.split("&&")[0])) {
+                    if (s.split("&&")[1].equals("0")) {
                         roomPanel.numberOfClients.setText("●0");
                         roomPanel.numberOfClients.setForeground(Color.RED);
-                    }else {
+                    } else {
                         roomPanel.numberOfClients.setText("● " + s.split("&&")[1]);
                         roomPanel.numberOfClients.setForeground(Color.green.darker());
                     }
