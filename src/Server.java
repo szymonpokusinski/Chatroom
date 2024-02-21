@@ -31,7 +31,6 @@ public class Server {
                     klients.add(klient);
                     klient.setRoom(RoomManager.rooms.get(0));
                     System.out.println(klients.get(0).room.name);
-
                     System.out.println(klient);
                     Thread receivingMessagesFromClient = new Thread(new SerwerOdKlienta(client));
                     receivingMessagesFromClient.start();

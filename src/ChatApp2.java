@@ -1,10 +1,10 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 public class ChatApp2 {
     public static void main(String[] args) throws IOException, FontFormatException {
@@ -21,7 +21,6 @@ public class ChatApp2 {
                         nick[0] = loginFrame.jTextField.getText();
                         loginFrame.dispose();
 
-                        // Po wpisaniu nicku utwórz klienta, nawiąż połączenie i uruchom GUI
                         try {
                             Klient klient = new Klient(nick[0]);
                             PrintWriter out = new PrintWriter(klient.socket.getOutputStream());
@@ -29,8 +28,19 @@ public class ChatApp2 {
                             out.flush();
                             System.out.println("Nawiązałem połączenie z serwerem" + String.valueOf(klient.socket));
                             GUI83 gui83 = new GUI83(klient);
+                            gui83.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosing(WindowEvent e) {
+                                    super.windowClosing(e);
+                                    try {
+                                        klient.socket.close();
+                                    } catch (IOException ex) {
+                                        throw new RuntimeException(ex);
+                                    }
+                                }
+                            });
                             Thread sendingMessage = new Thread(new KlientDoSerwera(klient.socket));
-                            Thread receivingMessage = new Thread(new KlientOdSerwera(gui83.chatPanel, gui83.roomPanel, gui83));
+                            Thread receivingMessage = new Thread(new KlientOdSerwera(gui83.chatPanel, gui83.roomsMenu, gui83));
                             sendingMessage.start();
                             receivingMessage.start();
                         } catch (IOException | FontFormatException ex) {

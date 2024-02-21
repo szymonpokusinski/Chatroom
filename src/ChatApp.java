@@ -27,10 +27,7 @@ public class ChatApp {
                             out.flush();
                             System.out.println("Nawiązałem połączenie z serwerem" + String.valueOf(klient.socket));
                             GUI83 gui83 = new GUI83(klient);
-                            Thread sendingMessage = new Thread(new KlientDoSerwera(klient.socket));
-                            Thread receivingMessage = new Thread(new KlientOdSerwera(gui83.chatPanel, gui83.roomsMenu, gui83));
-                            sendingMessage.start();
-                            receivingMessage.start();
+
                         } catch (IOException | FontFormatException ex) {
                             ex.printStackTrace();
                         }

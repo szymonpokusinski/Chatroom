@@ -112,10 +112,10 @@ public class ChatArea2 extends JPanel implements ActionListener {
         textField.setBackground(Color.DARK_GRAY);
         textField.setForeground(Color.WHITE);
         textField.setCaretColor(Color.white);
+
         Border border = BorderFactory.createEmptyBorder(5, 10, 5, 10);
         textField.setBorder(border);
         add(textField);
-
         sendButton = new RightArrowButton();
         sendButton.setBounds(320, 420, 30, 30);
         sendButton.setBackground(new Color(0, 102, 204));
@@ -124,8 +124,9 @@ public class ChatArea2 extends JPanel implements ActionListener {
     }
 
     public void displayMessage(String message) {
-        panelMessage.add(new ChatBubblePanel("Me:", message, true));
-        panelMessage.add(Box.createRigidArea(new Dimension(0, 10)));
+        ChatBubble chatBubble = new ChatBubble("Me",message, true);
+        panelMessage.add(chatBubble);
+        panelMessage.add(Box.createVerticalStrut(5));
         panelMessage.revalidate();
         panelMessage.repaint();
     }

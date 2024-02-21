@@ -84,6 +84,17 @@ public class SerwerOdKlienta implements Runnable {
                     System.out.println("Wiadomość: " + message1);
                     sendMessage(message1, socket);
 
+                } else if (message.equals("!!CLOSE!!")) {
+                    System.out.println("Zatrzymuje pentle");
+                    Klient klient = lookingForAClient();
+                    assert klient != null;
+                    klient.room.removeKlient(klient);
+                    roomsAndNumberOfClients();
+                    Server.klients.remove(klient);
+                    socket.close();
+                    in.close();
+                    break;
+
                 } else {
                     Klient sender;
                     System.out.println(message);
@@ -111,17 +122,7 @@ public class SerwerOdKlienta implements Runnable {
                 } catch (IOException e) {
                     System.out.println("Ngałe zerwanie połączenia");
                     throw new RuntimeException(e);
-            } finally {
-                try {
-                    System.out.println("zamkniecie połączenia");
-                    in.close();
-                    socket.close();
-                    //break;
-                } catch (IOException e) {
-                    //throw new RuntimeException(e);
                 }
-            }
-
         }
     }
     private void dodawanieWiadomosciDoPokoju(Wiadomosc wiadomosc, Room room){

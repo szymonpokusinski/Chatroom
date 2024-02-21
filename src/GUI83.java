@@ -11,6 +11,8 @@ public class GUI83 extends JFrame implements ActionListener {
     ChatArea2 chatPanel;
     JTextField textField;
     Klient klient;
+    Thread sendingMessage;
+    Thread receivingMessage;
     public static ArrayList<RoomPanel> roomPanels = new ArrayList<>();
 
     GUI83(Klient klient) throws FontFormatException, IOException {
@@ -21,7 +23,6 @@ public class GUI83 extends JFrame implements ActionListener {
         setLayout(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         roomsMenu = new RoomsMenu(this.klient);
         roomsMenu.makeRoom.addActionListener(this);
         roomsMenu.dostepnePokoje.addMouseListener(new MouseListener() {
@@ -38,7 +39,6 @@ public class GUI83 extends JFrame implements ActionListener {
                 }
             }
 
-            @Override
             public void mousePressed(MouseEvent e) {
 
             }
@@ -75,12 +75,9 @@ public class GUI83 extends JFrame implements ActionListener {
                         if (!makeRoomFrame.jTextField.getText().isEmpty()){
                             System.out.println(makeRoomFrame.jTextField.getText());
                             addRoomPanel(makeRoomFrame.jTextField.getText());
+                            String message = "!!NEWROOM!!"+makeRoomFrame.jTextField.getText();
                             try {
-                                PrintWriter out = new PrintWriter(klient.socket.getOutputStream());
-                                String message = "!!NEWROOM!!"+makeRoomFrame.jTextField.getText();
-                                out.println(message);
-                                out.flush();
-
+                                sendMessage(message);
                             } catch (IOException ex) {
                                 throw new RuntimeException(ex);
                             }
@@ -92,11 +89,29 @@ public class GUI83 extends JFrame implements ActionListener {
         });
 
         add(roomsMenu);
-
         chatPanel = new ChatArea2("chat1", this.klient);
         add(chatPanel);
-
         setVisible(true);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                try {
+                    sendMessage("!!CLOSE!!");
+                    dispose();
+                    sendingMessage.interrupt();
+                    receivingMessage.interrupt();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        this.sendingMessage = new Thread(new KlientOdSerwera(this.chatPanel, this.roomsMenu, this));
+        this.receivingMessage = new Thread(new KlientDoSerwera(this.klient.socket));
+        //Thread receivingMessagesFromClient = new Thread(new SerwerOdKlienta(this.klient.socket));
+        //receivingMessagesFromClient.start();
+        communicationStart();
     }
 
     public void addRoomPanel(String name){
@@ -119,15 +134,10 @@ public class GUI83 extends JFrame implements ActionListener {
                 chatPanel.changeRoom(panel.name.getText());
                 String message = "!!CHANGEROOM!!" + chat;
                 try {
-
-                    PrintWriter out = new PrintWriter(klient.socket.getOutputStream());
-                    out.println(message);
-                    out.flush();
-
+                    sendMessage(message);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
-
             }
         });
         roomsMenu.main.add(panel);
@@ -141,6 +151,25 @@ public class GUI83 extends JFrame implements ActionListener {
     public void czyszczenie(){
         roomsMenu.main.revalidate();
         roomsMenu.main.repaint();
+    }
+    private void communicationStart() throws IOException {
+        this.sendingMessage.start();
+        this.receivingMessage.start();
+    }
+    private void communicationClose(){
+        this.sendingMessage.interrupt();
+        this.receivingMessage.interrupt();
+        try {
+            sendingMessage.join();
+            receivingMessage.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private void sendMessage(String message) throws IOException {
+        PrintWriter out = new PrintWriter(klient.socket.getOutputStream());
+        out.println(message);
+        out.flush();
     }
 }
 
